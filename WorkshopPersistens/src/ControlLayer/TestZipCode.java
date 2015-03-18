@@ -14,4 +14,5 @@ public class TestZipCode {
 		
 		System.out.println(zip.findAllZipCodes());
 	}
+	test
 }
