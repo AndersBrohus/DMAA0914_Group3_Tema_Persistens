@@ -4,6 +4,11 @@ public class ZipCode {
 	private int zipCode;
 	private String city;
 	
+	public ZipCode()
+	{
+		
+	}
+	
 	public ZipCode(int zipCode)
 	{
 		this.zipCode = zipCode;
@@ -44,6 +49,9 @@ public class ZipCode {
 	}
 
 
-	
+	public String toString() {
+		String zip = zipCode + " - " + city;
+	    return zip;
+	}
 	
 }
