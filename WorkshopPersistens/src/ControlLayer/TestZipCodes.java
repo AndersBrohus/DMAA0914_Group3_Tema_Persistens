@@ -2,11 +2,11 @@ package ControlLayer;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
 
-public class TestZipCode {
+import ControlLayer.*;
+
+public class TestZipCodes {
 
 	@Test
 	public void test() {
@@ -14,5 +14,5 @@ public class TestZipCode {
 		
 		System.out.println(zip.findAllZipCodes());
 	}
-	test
+
 }
