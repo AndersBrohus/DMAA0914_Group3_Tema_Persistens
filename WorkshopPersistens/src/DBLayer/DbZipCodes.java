@@ -13,9 +13,9 @@ public class DbZipCodes implements IFDBZipCode {
       con = DbConnection.getInstance().getDBcon();
     }
 	
-    public ArrayList<ZipCode> getAllZipCodes(boolean retriveAssociation)
+    public ArrayList<ZipCode> getAllZipCodes()
     {
-        return miscWhere("", false);
+        return miscWhere("");
     }
     
 	private String buildQuery(String wClause)
@@ -28,7 +28,7 @@ public class DbZipCodes implements IFDBZipCode {
 		return query;
 	}
 	
-	private ArrayList<ZipCode> miscWhere(String wClause, boolean retrieveAssociation)
+	private ArrayList<ZipCode> miscWhere(String wClause)
 	{
         ResultSet results;
 	    ArrayList<ZipCode> list = new ArrayList<ZipCode>();	
@@ -69,4 +69,41 @@ public class DbZipCodes implements IFDBZipCode {
         }
         return zipObj;
     }
+	
+    public ZipCode findZipCode(int ZipCode)
+    {   String wClause = "  ZipCode = " + ZipCode;
+        return singleWhere(wClause);
+    }
+    
+	private ZipCode singleWhere(String wClause)
+	{
+		ResultSet results;
+		ZipCode zipObj = new ZipCode();
+                
+	    String query = buildQuery(wClause);
+        //System.out.println(query);
+        
+		try
+		{ 	// read the employee from the database
+	 		Statement stmt = con.createStatement();
+	 		stmt.setQueryTimeout(5);
+	 		results = stmt.executeQuery(query);
+	 		
+	 		if( results.next() )
+	 		{
+	 			zipObj = buildZipCode(results);
+	            
+	            stmt.close();
+			}
+            else
+            { 	//no employee was found
+            	zipObj = null;
+            }
+		}//end try	
+	 	catch(Exception e)
+		{
+	 		System.out.println("Query exception: "+e);
+	 	}
+		return zipObj;
+	}
 }

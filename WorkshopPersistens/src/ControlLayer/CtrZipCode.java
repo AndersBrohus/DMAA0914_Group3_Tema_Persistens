@@ -16,8 +16,16 @@ public class CtrZipCode {
     {
       IFDBZipCode dbZip = new DbZipCodes();
       ArrayList<ZipCode> allZip = new ArrayList<ZipCode>();
-      allZip = dbZip.getAllZipCodes(false);
+      allZip = dbZip.getAllZipCodes();
       return allZip;
+    }
+    
+    public ZipCode findZipCode(int Zip)
+    {
+    	IFDBZipCode dbZip = new DbZipCodes();
+		ZipCode singleZip = new ZipCode();
+		singleZip = dbZip.findZipCode(Zip);
+		return singleZip;
     }
 	
 
