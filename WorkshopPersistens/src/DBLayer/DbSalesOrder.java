@@ -8,21 +8,21 @@ import java.util.ArrayList;
 
 import ModelLayer.*;
 
-public class DbInvoice implements IFDBInvoice {
+public class DbSalesOrder implements IFDBSalesOrder {
 	private  Connection con;
     /** Creates a new instance of DBZipCodes */
-    public DbInvoice() {
+    public DbSalesOrder() {
       con = DbConnection.getInstance().getDBcon();
     }
 	
-    public ArrayList<Invoice> getAllInvoices()
+    public ArrayList<SalesOrder> getAllSalesOrder()
     {
         return miscWhere("");
     }
     
 	private String buildQuery(String wClause)
 	{
-	    String query="SELECT * FROM Invoice";
+	    String query="SELECT * FROM SalesOrder";
 		
 		if (wClause.length()>0)
 			query=query+" WHERE "+ wClause;
@@ -30,10 +30,10 @@ public class DbInvoice implements IFDBInvoice {
 		return query;
 	}
 	
-	private ArrayList<Invoice> miscWhere(String wClause)
+	private ArrayList<SalesOrder> miscWhere(String wClause)
 	{
         ResultSet results;
-	    ArrayList<Invoice> list = new ArrayList<Invoice>();	
+	    ArrayList<SalesOrder> list = new ArrayList<SalesOrder>();	
 		
 	    String query =  buildQuery(wClause);
   
@@ -44,9 +44,9 @@ public class DbInvoice implements IFDBInvoice {
 	 	
 	
 		while( results.next() ){
-			Invoice invObj = new Invoice();
-			invObj = buildInvoice(results);	
-                 list.add(invObj);	
+			SalesOrder ordObj = new SalesOrder();
+			ordObj = buildSalesOrder(results);	
+                 list.add(ordObj);	
 		}//end while
                  stmt.close();     			
 		}//slut try	
@@ -57,31 +57,35 @@ public class DbInvoice implements IFDBInvoice {
 		return list;
 	}
 	
-	private Invoice buildInvoice(ResultSet results)
+	private SalesOrder buildSalesOrder(ResultSet results)
     {  
-		Invoice invObj = new Invoice();
+		SalesOrder ordObj = new SalesOrder();
         try
         { // the columns from the table ZipCode  are used
-        	invObj.setInvoiceNo(results.getInt("invoiceNo"));
-        	invObj.setAmount(results.getInt("amount"));
-        	invObj.setPaymentDate(results.getDate("paymentDate"));
+        	ordObj.setId(results.getInt("id"));
+        	ordObj.setAmount(results.getInt("amount"));
+        	ordObj.setCustomerId(results.getInt("customerId"));
+        	ordObj.setInvoiceNo(results.getInt("invoiceNo"));
+        	ordObj.setDate(results.getDate("date"));
+        	ordObj.setDeliveryDate(results.getString("deliveryDate"));
+        	ordObj.setDeliveryStatus(results.getString("deliveryStatus"));
         }
         catch(Exception e)
         {
         	System.out.println("error in building the employee object");
         }
-        return invObj;
+        return ordObj;
     }
 	
-    public Invoice findInvoice(int invoiceNo)
-    {   String wClause = "  invoiceNo = " + invoiceNo;
+    public SalesOrder findSalesOrder(int id)
+    {   String wClause = "  id = " + id;
         return singleWhere(wClause);
     }
     
-	private Invoice singleWhere(String wClause)
+	private SalesOrder singleWhere(String wClause)
 	{
 		ResultSet results;
-		Invoice invObj = new Invoice();
+		SalesOrder ordObj = new SalesOrder();
                 
 	    String query = buildQuery(wClause);
         //System.out.println(query);
@@ -94,27 +98,32 @@ public class DbInvoice implements IFDBInvoice {
 	 		
 	 		if( results.next() )
 	 		{
-	 			invObj = buildInvoice(results);
+	 			ordObj = buildSalesOrder(results);
 	            
 	            stmt.close();
 			}
             else
             { 	//no employee was found
-            	invObj = null;
+            	ordObj = null;
             }
 		}//end try	
 	 	catch(Exception e)
 		{
 	 		System.out.println("Query exception: "+e);
 	 	}
-		return invObj;
+		return ordObj;
 	}
 	
 	@Override
-    public Invoice insertInvoice(Invoice inv) throws Exception
+    public SalesOrder insertSalesOrder(SalesOrder ord) throws Exception
     {
-	   String query="INSERT INTO Invoice(amount)  VALUES("+
-	  		inv.getAmount() + ")";
+	   String query="INSERT INTO SalesOrder(amount, deliveryStatus, deliveryDate, customerId, invoiceNo)  VALUES("+
+			 ord.getAmount() + ",'" +
+			 ord.getDeliveryStatus() + "','" +
+			 ord.getDeliveryDate() + "'," + 
+			 ord.getCustomerId() + "," + 
+			 ord.getInvoiceNo() +
+			 ")";
        //System.out.println("insert : " + query);
       try{ // insert new employee +  dependent
           Statement stmt = con.createStatement();
@@ -123,19 +132,19 @@ public class DbInvoice implements IFDBInvoice {
           stmt.close();
       }//end try
        catch(SQLException ex){
-          System.out.println("Invoice ikke oprettet");
-          throw new Exception ("Employee is not inserted correct");
+          System.out.println("SalesOrder ikke oprettet");
+          throw new Exception ("SalesOrder ikke oprettet");
        }
-      Invoice invObj = getLatest();
-      return invObj;
+      SalesOrder ordObj = getLatest();
+      return ordObj;
     }
 	
-	private Invoice getLatest()
+	private SalesOrder getLatest()
 	{
 		ResultSet results;
-		Invoice invObj = new Invoice();
+		SalesOrder ordObj = new SalesOrder();
                 
-	    String query = "SELECT TOP 1 * FROM Invoice ORDER BY invoiceNo DESC;";
+	    String query = "SELECT TOP 1 * FROM SalesOrder ORDER BY id DESC;";
         //System.out.println(query);
         
 		try
@@ -146,19 +155,19 @@ public class DbInvoice implements IFDBInvoice {
 	 		
 	 		if( results.next() )
 	 		{
-	 			invObj = buildInvoice(results);
+	 			ordObj = buildSalesOrder(results);
 	            
 	            stmt.close();
 			}
             else
             { 	//no employee was found
-            	invObj = null;
+            	ordObj = null;
             }
 		}//end try	
 	 	catch(Exception e)
 		{
 	 		System.out.println("Query exception: "+e);
 	 	}
-		return invObj;
+		return ordObj;
 	}
 }
